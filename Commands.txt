@@ -1,0 +1,82 @@
+from NewsPortal.models import *
+ 
+1.
+u1 = User.objects.create_user('Агафон')
+u2 = User.objects.create_user('Аглая')
+
+2. 
+Author1 = Author.objects.create(user=u1)
+Author2 = Author.objects.create(user=u2)
+
+3. 
+Category.objects.create(name='Weather')
+Category.objects.create(name='Health')
+Category.objects.create(name='Love')
+Category.objects.create(name='Sport')
+
+4.
+Post.objects.create(author=Author1, position=news, header='Фигурное катание', text='Фигурное катание — конькобежный вид спорта, относится к сложно координационным видам спорта. Основная идея заключается в передвижении спортсмена или пары спортсменов на коньках по льду с переменами направления скольжения и выполнении дополнительных элементов (вращений, прыжков, комбинаций шагов, поддержек и др.) под музыку.')
+
+Post.objects.create(author=Author1, position=article, header='Любовь', text='Любовь рассматривается также как философская категория, в виде субъектного отношения, интимного избирательного чувства, направленного на предмет любви. Любовь выступает важнейшим субъективным индикатором счастья.')
+
+Post.objects.create(author=Author2, position=article, header='Облака', text='Облака состоят из мельчайших капель жидкой воды и/или кристаллов водяного льда, называемых облачными элементами. Капельные облачные элементы наблюдаются при температуре воздуха в облаке свыше −10 °C. При температуре воздуха в облаке от −15 до −10 °C облако имеет смешанный состав (капли и ледяные кристаллы). При температуре воздуха в облаке ниже −15 °C — только кристаллические. Водяной пар не является основным компонентом облаков.')
+
+5.
+Post.objects.get(id=1).post_cat.add(Category.objects.get(id=4))
+Post.objects.get(id=2).post_cat.add(Category.objects.get(id=2))
+Post.objects.get(id=2).post_cat.add(Category.objects.get(id=3))
+Post.objects.get(id=3).post_cat.add(Category.objects.get(id=1))
+
+6.
+Comment.objects.create(comPost=Post.objects.get(id=1), comUser=Author.objects.get(id=1).user, text_comment='мечта')
+Comment.objects.create(comPost=Post.objects.get(id=2), comUser=User.objects.get(id=3), text_comment='сносно')
+Comment.objects.create(comPost=Post.objects.get(id=3), comUser=Author.objects.get(id=2).user, text_comment='идеально')
+Comment.objects.create(comPost=Post.objects.get(id=3), comUser=Author.objects.get(id=1).user, text_comment='так себе')
+
+7.
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=2).dislike()
+Comment.objects.get(pk=3).dislike()
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=4).like()
+
+Post.objects.get(pk=1).dislike()
+Post.objects.get(pk=3).like()
+Post.objects.get(pk=2).dislike()
+Post.objects.get(pk=2).dislike()
+Post.objects.get(pk=1).like()
+
+8.
+Author.objects.get(pk=1).update_rating()
+Author.objects.get(pk=2).update_rating()
+
+9.
+a = Author.objects.order_by('-rating_user')[:1]
+a[0].rating_user
+a[0].user.username
+
+10.
+p = Post.objects.order_by('-rating_content')[:1]
+p[0].author.user.username
+p[0].header
+p[0].preview()
+p[0].time_create.strftime("%Y-%m-%d %H:%M:%S") 
+p[0].rating_content
+
+11.
+com = Comment.objects.filter(comPost=p)
+for n in com:
+    n.time.strftime("%Y-%m-%d %H:%M:%S") 
+    n.comUser.username 
+    n.rating_comments
+    n.text_comment
+
+
+    
+
+
+
+
+
+
+
