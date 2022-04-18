@@ -1,0 +1,21 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+News
+{% endblock title %}
+{% load censor_filters %}
+
+{% block content %}
+   <h1>Новости</h1>
+   <h2>{{ news|length }} новости </h2>
+   <hr>
+       <table> <!-- Начинаем описывать таблицу -->
+       {% for new in news %}
+           <tr>
+               <td>{{ new.header | currency }}</td>
+               <td>{{ new.time_create|date:'d M Y' }}</td>
+               <td>{{ new.text |truncatewords:20 | currency }}</td>
+           </tr> <!-- Не забываем закрыть HTML-тег строки -->
+       {% endfor %}
+       </table> <!-- ... и таблицы -->
+{% endblock content %}

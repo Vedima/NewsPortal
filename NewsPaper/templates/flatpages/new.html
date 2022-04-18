@@ -1,0 +1,21 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+{% load censor_filters %}
+<!-- Название у нас будет Product -->
+{% block title %}
+New
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+    <h1>{{ new.header | currency }}</h1>
+    <hr>
+       <table> <!-- Начинаем описывать таблицу -->
+           <tr>
+               <td>{{ new.time_create|date:'d M Y' }}</td>
+           </tr> <!-- Не забываем закрыть HTML-тег строки -->
+           <tr>
+               <td>{{ new.text | currency }}</td>
+           </tr> <!-- Не забываем закрыть HTML-тег строки -->
+       </table> <!-- ... и таблицы -->
+{% endblock content %}

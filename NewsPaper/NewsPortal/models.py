@@ -45,6 +45,8 @@ class Post(models.Model):
     header = models.TextField()
     text = models.TextField()
     rating_content = models.IntegerField(default=0)
+    def __str__(self):
+        return f'{self.header.title()}: {self.text[:25]}'
     def like(self):
         self.rating_content += 1
         self.save()
