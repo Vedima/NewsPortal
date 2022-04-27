@@ -8,7 +8,7 @@ BanWords = ['также', 'любовь', 'спорта']
 
 
 @register.filter()
-def currency(word):
+def censor(word):
    if type(word) != str:
       return 'Неправильный тип данных'
    j = ''
@@ -24,5 +24,8 @@ def currency(word):
             k+= j
          j=''
          k+=i
-
+   if j.lower() in BanWords:
+      k += j[0] + ('*' * (len(j) - 1)) + ' '
+   else:
+      k += j
    return k

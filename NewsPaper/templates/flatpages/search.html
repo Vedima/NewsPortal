@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+News
+{% endblock title %}
+{% load censor_filters %}
+
+{% block content %}
+   <h1>Новости</h1>
+   <h2>{{ news|length }} новости </h2>
+
+   {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+
+       <input type="submit" value="Найти" />
+
+   </form>
+   <hr>
+       <table> <!-- Начинаем описывать таблицу -->
+       {% for new in news %}
+           <tr>
+               <td>{{ new.header | censor }}</td>
+               <td>{{ new.time_create|date:'d M Y' }}</td>
+               <td>{{ new.text |truncatewords:20 | censor }}</td>
+           </tr> <!-- Не забываем закрыть HTML-тег строки -->
+       {% endfor %}
+       </table> <!-- ... и таблицы -->
+{% endblock content %}
