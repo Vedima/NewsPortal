@@ -13,3 +13,8 @@ class PostForm(forms.ModelForm):
  #   class Meta:
   #      model = Post
    #     fields = ['author', 'header', 'text', 'post_cat']
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+        #fields = ['username', 'first_name', 'last_name', 'password', ]

@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Author
+from .models import Post, User
 from .filters import PostFilter
 from django.urls import reverse_lazy
-from .forms import PostForm
+from .forms import PostForm, UserForm
 from django.http import HttpRequest
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
@@ -56,7 +56,6 @@ class SearchList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['time_create'] = datetime.utcnow()
-        context['next_sale'] = 'eee'
         # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
@@ -95,3 +94,14 @@ class PostDelete(DeleteView):
     model = Post
     template_name = 'news_delete.html'
     success_url = reverse_lazy('new_list')
+
+
+
+class UserUpdate(LoginRequiredMixin, UpdateView):
+    form_class = UserForm
+    model = User
+    template_name = 'user.html'
+    success_url = reverse_lazy('new_list')
+
+    def get_object(self, **kwargs):
+        return self.request.user
