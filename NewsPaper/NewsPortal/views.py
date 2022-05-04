@@ -6,7 +6,7 @@ from .filters import PostFilter
 from django.urls import reverse_lazy
 from .forms import PostForm, UserForm
 from django.http import HttpRequest
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
@@ -71,27 +71,31 @@ class NewDetail(DetailView):
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'new'
 
-class PostCreate(CreateView):
+class PostCreate(PermissionRequiredMixin, CreateView):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+    permission_required = ('NewsPortal.add_post')
 
     def form_valid(self, form):
-        post = form.save(commit=False)
+        fields = form.save(commit=False)
         # print(HttpRequest.scheme)
+        user = User.objects.get(id=self.request.user.id)
+        author = Author.objects.get(user=user)
         if 'article' in self.request.path:
-            post.position = 'article'
+            fields.position = 'article'
         else:
-            post.position = 'new'
-
+            fields.position = 'new'
+        fields.author = author
+        fields.save()
         return super().form_valid(form)
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(PermissionRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
-
+    permission_required = ('NewsPortal.change_post')
 # Представление удаляющее товар.
 class PostDelete(DeleteView):
     model = Post
@@ -121,5 +125,5 @@ def upgrade_me(request):
     if not user.groups.filter(name='authors').exists():
         authors_group = Group.objects.get(name='authors')
         authors_group.user_set.add(user)
-        #Author.objects.create(author=user)
-    return redirect('/')
+        Author.objects.create(user=user)
+    return redirect('user_update')
