@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from datetime import datetime
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, User
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from .models import Post, User, Author
 from .filters import PostFilter
 from django.urls import reverse_lazy
 from .forms import PostForm, UserForm
 from django.http import HttpRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
@@ -96,7 +99,7 @@ class PostDelete(DeleteView):
     success_url = reverse_lazy('new_list')
 
 
-
+# Представление страницы пользователя
 class UserUpdate(LoginRequiredMixin, UpdateView):
     form_class = UserForm
     model = User
@@ -105,3 +108,18 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 
     def get_object(self, **kwargs):
         return self.request.user
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
+
+
+@login_required
+def upgrade_me(request):
+    user = request.user
+
+    if not user.groups.filter(name='authors').exists():
+        authors_group = Group.objects.get(name='authors')
+        authors_group.user_set.add(user)
+        #Author.objects.create(author=user)
+    return redirect('/')
