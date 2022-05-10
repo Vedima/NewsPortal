@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-from .models import Post, User, Author
+from .models import Post, User, Author, Category,PostCategory
 from .filters import PostFilter
 from django.urls import reverse_lazy
-from .forms import PostForm, UserForm
+from .forms import PostForm, UserForm, SubscribeForm
 from django.http import HttpRequest
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect
@@ -75,6 +75,7 @@ class PostCreate(PermissionRequiredMixin, CreateView):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+    # Разрешение на добавление новостей и статей
     permission_required = ('NewsPortal.add_post')
 
     def form_valid(self, form):
@@ -95,6 +96,7 @@ class PostUpdate(PermissionRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+    # Разрешение на изменение новостей и статей
     permission_required = ('NewsPortal.change_post')
 # Представление удаляющее товар.
 class PostDelete(DeleteView):
@@ -108,6 +110,7 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
     form_class = UserForm
     model = User
     template_name = 'user.html'
+    #URL - адрес для перенаправления после успешной обработки формы.
     success_url = reverse_lazy('new_list')
 
     def get_object(self, **kwargs):
@@ -121,9 +124,22 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 @login_required
 def upgrade_me(request):
     user = request.user
-
     if not user.groups.filter(name='authors').exists():
         authors_group = Group.objects.get(name='authors')
         authors_group.user_set.add(user)
         Author.objects.create(user=user)
     return redirect('user_update')
+
+class Subscribe(LoginRequiredMixin, UpdateView):
+    form_class = SubscribeForm
+    model = PostCategory
+    template_name = 'subscribe.html'
+
+    def get_object(self, **kwargs):
+        return self.request.user
+
+@login_required
+def subscribe_me(request, id):
+    print("subscribe_me_1")
+    print(id)
+    return redirect('subscribe')

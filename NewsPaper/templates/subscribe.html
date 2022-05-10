@@ -1,0 +1,25 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<script>
+function showPage() {
+    var sel = document.getElementById('id_category');
+    var id = sel.options[sel.selectedIndex].value;
+    window.open("../subscribe_me/" + id + "/","_self");
+}
+</script>
+
+<h1>Подписка</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Подписаться" />
+
+    <button> <a href="../subscribe_me/">subscribe_me</a> </button>
+
+     <input class="SubmitButton" type="button" value="Подписаться3" onclick="showPage()" />
+
+
+</form>
+{% endblock content %}
