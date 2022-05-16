@@ -140,6 +140,10 @@ class Subscribe(LoginRequiredMixin, UpdateView):
 
 @login_required
 def subscribe_me(request, id):
-    print("subscribe_me_1")
+    user = request.user
+    cat = Category.objects.get(pk=id)
+    cat.subscribers.add(user)
+    #a = cat.subscribers
+   # print(a)
     print(id)
     return redirect('subscribe')
