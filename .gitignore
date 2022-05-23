@@ -1,3 +1,5 @@
 .idea/
 venv/
 NewsPaper/NewsPaper/.env
+NewsPaper/NewsPaper/__pycache__/
+NewsPaper/NewsPortal/__pycache__/

@@ -51,14 +51,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'NewsPortal',
+    #'NewsPortal',
     'django_filters',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     # ... include the providers you want to enable:
     'allauth.socialaccount.providers.google',
-    'news.apps.NewsportalConfig'
+    'NewsPortal.apps.NewsportalConfig',
+    'django_apscheduler'
 ]
 DEFAULT_FROM_EMAIL = 'vedavik@yandex.ru'
 SITE_ID = 1
@@ -166,3 +167,9 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # ваше имя пользов
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # пароль от почты
 EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
 #DEFAULT_FROM_EMAIL = EMAIL_HOST_USER+‘@yandex.ru’ # если вы используете Яндекс, то не забудьте добавить + ‘@yandex.ru’
+
+# формат даты, которую будет воспринимать наш задачник
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

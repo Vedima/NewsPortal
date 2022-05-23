@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from datetime import datetime
+import datetime
+#from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Post, User, Author, Category,PostCategory
 from .filters import PostFilter
@@ -29,7 +30,7 @@ class NewsList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['time_create'] = datetime.utcnow()
+        context['time_create'] = datetime.datetime.utcnow()
 
         return context
 
@@ -58,7 +59,7 @@ class SearchList(ListView):
         return self.filterset.qs
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['time_create'] = datetime.utcnow()
+        context['time_create'] = datetime.datetime.utcnow()
         # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
@@ -83,13 +84,35 @@ class PostCreate(PermissionRequiredMixin, CreateView):
         # print(HttpRequest.scheme)
         user = User.objects.get(id=self.request.user.id)
         author = Author.objects.get(user=user)
+        cur_time = datetime.datetime.now()
+        print(cur_time)
+        time_day = cur_time - datetime.timedelta(days=1)
+        print(time_day)
+
+        #print(time_day)
+        post_day = Post.objects.filter(author=author, time_create__range=(time_day, cur_time))
+        print(author, user)
+        print(len(post_day))
         if 'article' in self.request.path:
             fields.position = 'article'
         else:
             fields.position = 'new'
         fields.author = author
-        fields.save()
-        return super().form_valid(form)
+        if len(post_day) < 3:
+            fields.save()
+            return super().form_valid(form)
+        else:
+            return redirect ('post_create')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = User.objects.get(id=self.request.user.id)
+        author = Author.objects.get(user=user)
+        cur_time = datetime.datetime.now()
+        time_day = cur_time - datetime.timedelta(days=1)
+        post_day = Post.objects.filter(author=author, time_create__range=(time_day, cur_time))
+        context['cnt1'] = len(post_day)
+        return context
 
 
 class PostUpdate(PermissionRequiredMixin, UpdateView):

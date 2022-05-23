@@ -1,7 +1,10 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-<h1>Новости</h1>
+<h1>Новости.</h1>
+{% if  cnt1 >= 3 %}
+    <h1>(У вас уже {{ cnt1 }} новостей за сутки. Нельзя размещать более 3х)</h1>
+{% endif %}
 <hr>
 <form action="" method="post">
     {% csrf_token %}

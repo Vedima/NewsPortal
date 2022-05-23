@@ -3,6 +3,6 @@ from django.apps import AppConfig
 
 class NewsportalConfig(AppConfig):
     #default_auto_field = 'django.db.models.BigAutoField'
-    name = 'news'
+    name = 'NewsPortal'
     def ready(self):
-        import news.signals
+        import NewsPortal.signals
