@@ -89,7 +89,7 @@ class PostCreate(PermissionRequiredMixin, CreateView):
         time_day = cur_time - datetime.timedelta(days=1)
         print(time_day)
 
-        #print(time_day)
+        # Новости за день от данного автора
         post_day = Post.objects.filter(author=author, time_create__range=(time_day, cur_time))
         print(author, user)
         print(len(post_day))
@@ -98,6 +98,7 @@ class PostCreate(PermissionRequiredMixin, CreateView):
         else:
             fields.position = 'new'
         fields.author = author
+        # Нельзя больше 3 новостей в день создавать
         if len(post_day) < 3:
             fields.save()
             return super().form_valid(form)
@@ -143,7 +144,7 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
-
+# Делаем пользователя автором
 @login_required
 def upgrade_me(request):
     user = request.user
@@ -153,6 +154,7 @@ def upgrade_me(request):
         Author.objects.create(user=user)
     return redirect('user_update')
 
+#Представление формы для подписки на категории
 class Subscribe(LoginRequiredMixin, UpdateView):
     form_class = SubscribeForm
     model = PostCategory
@@ -161,12 +163,12 @@ class Subscribe(LoginRequiredMixin, UpdateView):
     def get_object(self, **kwargs):
         return self.request.user
 
+# Подписываем пользователя на категорию
 @login_required
 def subscribe_me(request, id):
     user = request.user
     cat = Category.objects.get(pk=id)
     cat.subscribers.add(user)
-    #a = cat.subscribers
-   # print(a)
+
     print(id)
     return redirect('subscribe')
