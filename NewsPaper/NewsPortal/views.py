@@ -2,7 +2,7 @@ from django.shortcuts import render
 import datetime
 #from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-from .models import Post, User, Author, Category,PostCategory
+from .models import Post, User, Author, Category, PostCategory
 from .filters import PostFilter
 from django.urls import reverse_lazy
 from .forms import PostForm, UserForm, SubscribeForm
@@ -11,6 +11,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache # импортируем наш кэш
+from django.utils.translation import gettext as _ # импортируем функцию для перевода
+from django.http import HttpResponse
+from django.views import View
 # Create your views here.
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
@@ -71,6 +75,17 @@ class NewDetail(DetailView):
     template_name = 'flatpages/new.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'new'
+    queryset = Post.objects.all()
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта
+        obj = cache.get(f'post-{self.kwargs["pk"]}',
+                        None)  # кэш очень похож на словарь, и метод get действует также. Он забирает значение
+                               # по ключу, если его нет, то забирает None.
+
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object()
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
 
 class PostCreate(PermissionRequiredMixin, CreateView):
     form_class = PostForm
@@ -172,3 +187,10 @@ def subscribe_me(request, id):
 
     print(id)
     return redirect('subscribe')
+
+
+class Index(View):
+    def get(self, request):
+        string = _('Hello world')
+
+        return HttpResponse(string)
